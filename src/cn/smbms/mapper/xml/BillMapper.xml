@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smbms.mapper.BillMapper">
+	<!-- 查询+分页 -->
+	<select id="findByPage" resultType="Bill" parameterType="hashmap">
+		select b.*,p.proName as providerName 
+		from smbms_bill b inner join 
+		smbms_provider p on p.id = b.providerId
+		<where>
+			<if test="productName!=null">
+				productName like CONCAT('%',#{productName},'%')
+			</if>
+			<if test="providerId!=null">
+				and providerId = #{providerId}
+			</if>
+			<if test="isPayment!=null">
+				and isPayment=#{isPayment}
+			</if>
+		</where>
+		limit #{index},#{size}
+	</select>
+	<!-- 查询总记录数+分页 -->
+	<select id="findByCount" resultType="int" parameterType="hashmap">
+		select count(*) from smbms_bill b inner join 
+		smbms_provider p on p.id = b.providerId
+		<where>
+			<if test="productName!=null">
+				productName like CONCAT('%',#{productName},'%')
+			</if>
+			<if test="providerId!=null">
+				and providerId = #{providerId}
+			</if>
+			<if test="isPayment!=null">
+				and isPayment=#{isPayment}
+			</if>
+		</where>
+	</select>
+	<!-- 添加 -->
+	<insert id="addBill" parameterType="Bill">
+		insert into smbms_bill(billCode,productName,
+		productUnit,productCount,totalPrice,
+		providerId,isPayment) values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="billCode!=null">#{billCode},</if>
+			<if test="productName!=null">#{productName},</if>
+			<if test="productUnit!=null">#{productUnit},</if>
+			<if test="productCount!=null">#{productCount},</if>
+			<if test="totalPrice!=null">#{totalPrice},</if>
+			<if test="providerId!=null">#{providerId},</if>
+			<if test="isPayment!=null">#{isPayment}</if>
+		</trim>
+	</insert>
+	<!-- 删除 -->
+	<delete id="deleteBill" parameterType="int">
+		delete from smbms_bill where bId = #{id}
+	</delete>
+	<!-- 修改 -->
+	<update id="updateBill" parameterType="Bill">
+		update smbms_bill
+		<set>
+			<if test="billCode!=null">billCode=#{billCode},</if>
+			<if test="productName!=null">productName=#{productName},</if>
+			<if test="productUnit!=null">productUnit=#{productUnit},</if>
+			<if test="productCount!=null">productCount=#{productCount},</if>
+			<if test="totalPrice!=null">totalPrice=#{totalPrice},</if>
+			<if test="providerId!=null">providerId=#{providerId},</if>
+			<if test="isPayment!=null">isPayment=#{isPayment}</if>
+		</set>
+		where bId = #{bId}
+	</update>
+	<!-- 查询单个对象 -->
+	<select id="findOne" resultType="Bill">
+		select b.*,p.proName as providerName 
+		from smbms_bill b inner join 
+		smbms_provider p on p.id = b.providerId
+		where bId=#{id}
+	</select>
+</mapper>

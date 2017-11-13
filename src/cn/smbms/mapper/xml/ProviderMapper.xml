@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.smbms.mapper.ProviderMapper">
+	<sql id="commonSql">
+		select * from smbms_provider
+	</sql>
+	<select id="findAll" resultType="Provider">
+		<include refid="commonSql"/>
+	</select>
+	<!-- 通过条件查询供应商信息 -->
+	<select id="findByAll" resultType="Provider">
+		<include refid="commonSql"/>
+		<where>
+			<if test="proName!=null">
+				proName like concat('%',#{proName},'%')
+			</if>
+			<if test="proCode!=null">
+				and proCode like concat('%',#{proCode},'%')
+			</if>
+		</where>
+		limit #{index},#{size}
+	</select>
+	<!-- 查询总记录数 -->
+	<select id="findByCount" resultType="int">
+		select count(*) from smbms_provider
+		<where>
+			<if test="proName!=null">
+				proName like concat('%',#{proName},'%')
+			</if>
+			<if test="proCode!=null">
+				and proCode like concat('%',#{proCode},'%')
+			</if>
+		</where>
+	</select>
+	<!-- 查询单个信息 -->
+	<select id="findProvOne" resultType="Provider">
+		<include refid="commonSql"/> where id=#{id}
+	</select>
+	<!-- 添加供应商 -->
+	<insert id="addProvider" parameterType="Provider">
+		insert into smbms_provider(proCode,proName,proContact,proPhone,
+		proAddress,proFax,proDesc) VALUES
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="proCode!=null">#{proCode},</if>
+			<if test="proName!=null">#{proName},</if>
+			<if test="proContact!=null">#{proContact},</if>
+			<if test="proPhone!=null">#{proPhone},</if>
+			<if test="proAddress!=null">#{proAddress},</if>
+			<if test="proFax!=null">#{proFax},</if>
+			<if test="proDesc!=null">#{proDesc},</if>
+		</trim> 
+	</insert>
+	<!-- 删除供应商 -->
+	<delete id="deleteProvider">
+		delete from smbms_provider where id=#{id}
+	</delete>
+	<!-- 更新操作  -->
+	<update id="updateProvider" parameterType="Provider">
+		update smbms_provider
+		<set>
+			<if test="proCode!=null">proCode=#{proCode},</if>
+			<if test="proName!=null">proName=#{proName},</if>
+			<if test="proDesc!=null">proDesc=#{proDesc},</if>
+			<if test="proContact!=null">proContact=#{proContact},</if>
+			<if test="proPhone!=null">proPhone=#{proPhone},</if>
+			<if test="proFax!=null">proFax=#{proFax},</if>
+			<if test="proAddress!=null">proAddress=#{proAddress},</if>
+		</set>
+		where id=#{id}
+	</update>
+</mapper>
